@@ -1,0 +1,50 @@
+/* ---------- Tarjeta ---------- */
+.cardWrap { height: 100%; }
+.card { position: relative; display: flex; flex-direction: column; height: 100%; background: var(--white); color: var(--text); overflow: hidden; box-shadow: 0 1px 0 var(--gray-2); transition: box-shadow .4s var(--ease); }
+.card:hover { box-shadow: 0 24px 50px -18px rgba(0,0,0,.45); }
+.cardMedia { position: relative; height: 300px; overflow: hidden; background:
+  radial-gradient(ellipse 80% 60% at 50% 100%, rgba(215,20,30,.0), transparent 70%),
+  linear-gradient(180deg, #2a2a30 0%, #111114 100%); transition: background .5s; }
+.cardMedia::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 55% at 50% 105%, rgba(215,20,30,.6), transparent 70%); opacity: 0; transition: opacity .5s var(--ease); }
+.card:hover .cardMedia::after, .cardChamp .cardMedia::after { opacity: 1; }
+.cardGhost { position: absolute; top: 14px; left: 0; right: 0; text-align: center; font: 800 96px/.8 var(--font-display); text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.1); white-space: nowrap; transition: transform .8s var(--ease), -webkit-text-stroke-color .4s; }
+.card:hover .cardGhost { transform: scale(1.08); -webkit-text-stroke-color: rgba(255,255,255,.22); }
+.cardArt { position: absolute; left: -10%; right: -10%; bottom: 0; height: 94%; display: flex; justify-content: center; align-items: flex-end; z-index: 1; transition: transform .6s var(--ease); }
+.card:hover .cardArt { transform: scale(1.05); }
+.cardBadge { position: absolute; top: 14px; left: 14px; z-index: 2; }
+.cardRank { position: absolute; top: 12px; left: 14px; z-index: 2; font: 800 28px/1 var(--font-display); color: rgba(255,255,255,.6); }
+.cardBody { position: relative; padding: 18px 20px 22px; display: grid; gap: 6px; border-top: 4px solid var(--black); transition: border-color .3s; }
+.card:hover .cardBody { border-color: var(--red); }
+.nick { font: italic 700 15px/1 var(--font-display); text-transform: uppercase; color: var(--red); letter-spacing: .02em; }
+.card h3 { font-size: 28px; font-weight: 800; transition: color .25s; }
+.card h3 span { font-weight: 600; }
+.cardMeta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font: 600 13px/1 var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--mid); }
+.cardMeta b { font: 800 22px/1 var(--font-display); color: var(--text); letter-spacing: 0; }
+.cardCta { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; display: grid; place-items: center; background: var(--red); color: var(--white); font: 700 13px/1 var(--font-display); text-transform: uppercase; letter-spacing: .14em; transform: translateY(100%); transition: transform .4s var(--ease); z-index: 3; }
+.card:hover .cardCta { transform: translateY(0); }
+.cardDark { background: var(--ink-2); color: var(--white); }
+.cardDark .cardBody { border-color: var(--ink-3); }
+.cardDark .cardMeta b { color: var(--white); }
+
+/* ---------- Grid / filtros ---------- */
+.filters { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 32px; }
+.search { position: relative; display: flex; align-items: center; color: var(--mid); }
+.search svg { position: absolute; left: 14px; }
+.search input { height: 46px; width: 280px; max-width: 100%; padding: 0 16px 0 42px; border: 1px solid var(--gray-2); background: var(--white); font-weight: 600; outline: none; transition: border-color .2s; }
+.search input:focus { border-color: var(--black); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 22px; }
+.empty { text-align: center; color: var(--mid); padding: 40px; }
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cardMedia { height: 210px; }
+  .cardGhost { font-size: 64px; }
+  .card h3 { font-size: 21px; }
+  .cardBody { padding: 14px 12px 16px; }
+  .cardMeta { flex-direction: column; align-items: flex-start; gap: 6px; font-size: 11px; }
+  .cardMeta b { font-size: 18px; }
+  .cardRank { font-size: 22px; }
+  .cardBadge { font-size: 10px !important; padding: 5px 7px !important; }
+  .search { width: 100%; }
+  .search input { width: 100%; }
+}
