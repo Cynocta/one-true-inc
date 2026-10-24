@@ -7,6 +7,8 @@ export const en: Dict = {
   "nav.news": "News",
   "nav.tickets": "Tickets",
   "nav.contact": "Contact",
+  "nav.story": "Our story",
+  "promo.presale": "Presale: 2nd anniversary tee",
   "nav.search": "Search",
   "nav.home": "Home",
   "nav.menu": "Menu",

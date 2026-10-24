@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/components/providers/I18nProvider";
 import { Logo } from "@/components/ui/Brand";
-import { Ticker } from "@/components/ui/Ticker";
-import { SOCIAL } from "@/data/site";
+import { Ticker, type TickerItem } from "@/components/ui/Ticker";
+import { PRESALE_ACTIVE, SOCIAL } from "@/data/site";
 import type { DictKey } from "@/i18n";
 import { LANGS, type Lang } from "@/i18n/config";
 import { nextEvent } from "@/lib/data";
@@ -15,11 +15,12 @@ import { fmtDate, href } from "@/lib/format";
 import { SearchOverlay } from "./SearchOverlay";
 import s from "./Header.module.css";
 
-const LEFT: { path: string; key: DictKey }[] = [
+const LEFT: { path: string; key: DictKey; promo?: boolean }[] = [
   { path: "eventos", key: "nav.events" },
   { path: "rankings", key: "nav.rankings" },
   { path: "peleadores", key: "nav.fighters" },
   { path: "noticias", key: "nav.news" },
+  ...(PRESALE_ACTIVE ? [{ path: "historia", key: "nav.story" as DictKey, promo: true }] : []),
 ];
 const RIGHT: { path: string; key: DictKey }[] = [
   { path: "boletas", key: "nav.tickets" },
@@ -84,16 +85,17 @@ export function Header() {
 
   const active = (p: string) => pathname.startsWith(`/${lang}/${p}`);
   const ev = nextEvent();
-  const tickerItems = [
+  const tickerItems: TickerItem[] = [
+    ...(PRESALE_ACTIVE ? [{ text: t("promo.presale"), href: `${href(lang, "historia")}#camiseta` }] : []),
     t("ph.note"),
     ev ? `${ev.name} · ${fmtDate(ev.date, lang, { day: "numeric", month: "short" })} · ${ev.venue}` : "",
     t("home.ticker"),
     "#TrueBoxing",
     "#TrueKnuckles",
-  ].filter(Boolean);
+  ].filter((it) => it !== "");
 
-  const NavLink = ({ path, k }: { path: string; k: DictKey }) => (
-    <Link href={href(lang, path)} className={`${s.link} ${active(path) ? s.active : ""}`}>
+  const NavLink = ({ path, k, promo }: { path: string; k: DictKey; promo?: boolean }) => (
+    <Link href={href(lang, path)} className={`${s.link} ${promo ? s.promo : ""} ${active(path) ? s.active : ""}`}>
       {t(k)}
       {active(path) && <motion.span layoutId="nav-underline" className={s.underline} />}
     </Link>
@@ -112,7 +114,7 @@ export function Header() {
             <span /><span /><span />
           </button>
           <nav className={`${s.nav} ${s.left}`}>
-            {LEFT.map((n) => <NavLink key={n.path} path={n.path} k={n.key} />)}
+            {LEFT.map((n) => <NavLink key={n.path} path={n.path} k={n.key} promo={n.promo} />)}
           </nav>
           <Link href={href(lang)} className={s.logo} aria-label="One True — inicio">
             <motion.span whileHover={{ scale: 1.06, rotate: -2 }} transition={{ type: "spring", stiffness: 400, damping: 15 }} style={{ display: "inline-flex" }}>

@@ -5,6 +5,8 @@
 .right { justify-content: flex-end; gap: 22px; }
 .link { position: relative; font: 700 14px/1 var(--font-display); text-transform: uppercase; letter-spacing: .1em; padding: 29px 0; color: #ddd; transition: color .2s; }
 .link:hover, .active { color: var(--white); }
+.promo { color: var(--gold); }
+.promo:hover { color: var(--white); }
 .link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 20px; height: 3px; background: rgba(255,255,255,.35); transform: scaleX(0); transform-origin: right; transition: transform .35s var(--ease); }
 .link:hover::after { transform: scaleX(1); transform-origin: left; }
 .underline { position: absolute; left: 0; right: 0; bottom: 20px; height: 3px; background: var(--red); z-index: 1; }

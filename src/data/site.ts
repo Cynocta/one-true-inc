@@ -7,6 +7,16 @@ export const SOCIAL = {
 };
 
 /**
+ * Número de WhatsApp que recibe pedidos de la tienda (formato 57XXXXXXXXXX, sin +).
+ * PENDIENTE en la hoja de la tienda. Mientras esté vacío, el pedido se copia al portapapeles
+ * y se abre SOCIAL.whatsapp (los enlaces wa.me/message no aceptan texto prellenado).
+ */
+export const SHOP_WHATSAPP_PHONE = "";
+
+/** Preventa de la camiseta del 2do aniversario: muestra "Historia" en el menú y en la cinta roja. Pásalo a false al cerrar la preventa. */
+export const PRESALE_ACTIVE = true;
+
+/**
  * Etapas de precio. Las fechas son de EJEMPLO para TrueBoxing 5; cuando haya backend,
  * cada evento tendrá sus propias etapas y el cambio de precio lo hará el servidor.
  */

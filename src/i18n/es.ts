@@ -5,6 +5,8 @@ export const es = {
   "nav.news": "Noticias",
   "nav.tickets": "Boletas",
   "nav.contact": "Contacto",
+  "nav.story": "Historia",
+  "promo.presale": "Preventa: camiseta del 2do aniversario",
   "nav.search": "Buscar",
   "nav.home": "Inicio",
   "nav.menu": "Menú",
