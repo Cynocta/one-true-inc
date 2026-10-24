@@ -1,4 +1,4 @@
-# main -> Worker "onetrue-proximamente" en el dominio de One True (página de Próximamente + API de la lista).
+# main -> Worker "onetrue-proximamente" en el dominio de One True (página de Próximamente + API de la lista en Supabase).
 # Secretos del repo:   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
 # Variables del repo:  SITE_URL (https://dominio), TURNSTILE_SITE_KEY (opcional)
 name: Deploy main
@@ -29,12 +29,10 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      - name: Migraciones D1 y deploy a Cloudflare
+      - name: Deploy a Cloudflare
         if: github.event_name != 'pull_request'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: |
-            d1 migrations apply onetrue-lanzamiento --remote
-            deploy
+          command: deploy

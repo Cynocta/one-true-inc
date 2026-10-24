@@ -7,7 +7,6 @@
     "build": "next build",
     "lint": "tsc --noEmit && tsc -p worker/tsconfig.json",
     "preview": "npm run build && wrangler dev --port 8787",
-    "db:local": "wrangler d1 migrations apply onetrue-lanzamiento --local",
     "cf-types": "wrangler types worker/worker-configuration.d.ts"
   },
   "dependencies": {

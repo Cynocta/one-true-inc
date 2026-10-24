@@ -1,5 +1,5 @@
 // Rama main: página de Próximamente en el dominio de One True.
-// Archivos estáticos (Next.js export en ./out) + Worker para /api/* (registro en D1).
+// Archivos estáticos (Next.js export en ./out) + Worker para /api/* (lista de lanzamiento en Supabase).
 // La rama develop tiene su propia config (sitio completo, Worker "onetrue-develop").
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -12,15 +12,10 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"]
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "onetrue-lanzamiento",
-      // Reemplazar con el id que devuelve: npx wrangler d1 create onetrue-lanzamiento
-      "database_id": "00000000-0000-0000-0000-000000000000",
-      "migrations_dir": "migrations"
-    }
-  ],
+  "vars": {
+    "SUPABASE_URL": "https://rtaflovadzoanspemxbh.supabase.co"
+  },
+  // Secreto obligatorio: npx wrangler secret put SUPABASE_SECRET_KEY
   "observability": { "enabled": true }
   // Dominio (descomentar cuando la zona esté en Cloudflare):
   // , "routes": [{ "pattern": "DOMINIO.com", "custom_domain": true }, { "pattern": "www.DOMINIO.com", "custom_domain": true }]

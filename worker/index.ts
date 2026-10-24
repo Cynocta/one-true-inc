@@ -1,25 +1,29 @@
 /**
  * Worker de la página de Próximamente.
- *  POST /api/registro   guarda WhatsApp y/o correo en D1 (con consentimiento, anti-bots y límite por IP)
+ *  POST /api/registro   guarda WhatsApp y/o correo en Supabase (consentimiento, anti-bots y límite por IP)
  *  GET  /api/registro   cuántas personas hay en la fila (para el contador de la página)
- *  GET  /api/leads.csv  exporta la lista (requiere Authorization: Bearer ADMIN_TOKEN)
  *  Todo lo demás lo sirven los archivos estáticos (Next.js export en ./out).
  *
- * Secretos opcionales (npx wrangler secret put NOMBRE):
- *  TURNSTILE_SECRET  activa la verificación de Cloudflare Turnstile
- *  ADMIN_TOKEN       habilita la exportación CSV
- *  IP_SALT           sal para el hash de IP (si falta se usa una fija)
+ * La tabla public.launch_leads está cerrada con RLS: solo se escribe con las funciones
+ * join_launch_list / launch_list_count, y solo con la llave secreta (service_role).
+ * SQL: supabase/migrations/0001_lista_lanzamiento.sql
+ *
+ * Config:  SUPABASE_URL (vars en wrangler.jsonc)
+ * Secretos (npx wrangler secret put NOMBRE; en local, archivo .dev.vars):
+ *  SUPABASE_SECRET_KEY  llave secreta del proyecto (sb_secret_...). Obligatoria.
+ *  TURNSTILE_SECRET     activa la verificación de Cloudflare Turnstile (opcional)
+ *  IP_SALT              sal para el hash de IP (opcional)
  */
 
 declare global {
   interface Env {
+    SUPABASE_URL: string;
+    SUPABASE_SECRET_KEY?: string;
     TURNSTILE_SECRET?: string;
-    ADMIN_TOKEN?: string;
     IP_SALT?: string;
   }
 }
 
-const MAX_PER_IP_10_MIN = 5;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 interface Payload {
@@ -48,7 +52,6 @@ export default {
       if (req.method === "GET") return count(env);
       return json({ error: "method" }, 405);
     }
-    if (url.pathname === "/api/leads.csv") return exportCsv(req, env);
     if (url.pathname.startsWith("/api/")) return json({ error: "not_found" }, 404);
     return env.ASSETS.fetch(req);
   },
@@ -78,47 +81,47 @@ async function signup(req: Request, env: Env): Promise<Response> {
     if (!ok) return json({ error: "captcha" }, 403);
   }
 
+  if (!env.SUPABASE_SECRET_KEY) return json({ error: "config" }, 503);
   const ipHash = await sha256((req.headers.get("cf-connecting-ip") || "0.0.0.0") + (env.IP_SALT || "onetrue-lanzamiento"));
-  const since = new Date(Date.now() - 10 * 60_000).toISOString();
-  const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM leads WHERE ip_hash = ? AND created_at > ?").bind(ipHash, since).first<{ n: number }>();
-  if ((recent?.n ?? 0) >= MAX_PER_IP_10_MIN) return json({ error: "rate" }, 429);
 
-  // ¿Ya estaba en la fila? Completamos el dato que falte y devolvemos su puesto
-  const existing = await env.DB.prepare("SELECT id, email, phone FROM leads WHERE (email IS NOT NULL AND email = ?) OR (phone IS NOT NULL AND phone = ?) LIMIT 1")
-    .bind(email, phone)
-    .first<{ id: number; email: string | null; phone: string | null }>();
-  if (existing) {
-    await env.DB.prepare("UPDATE leads SET email = COALESCE(email, ?), phone = COALESCE(phone, ?), name = COALESCE(name, ?) WHERE id = ?")
-      .bind(email, phone, name, existing.id)
-      .run()
-      .catch(() => null); // si el dato nuevo ya pertenece a otra fila, se deja como estaba
-    return json({ ok: true, position: existing.id, already: true });
+  const r = await rpc(env, "join_launch_list", {
+    p_name: name,
+    p_email: email,
+    p_phone: phone,
+    p_source: clean(body.source, 60),
+    p_utm: body.utm && typeof body.utm === "object" ? body.utm : null,
+    p_ip_hash: ipHash,
+    p_user_agent: clean(req.headers.get("user-agent") ?? undefined, 300),
+  });
+  if (!r.ok) {
+    const err = (await r.json().catch(() => ({}))) as { message?: string };
+    const msg = err.message || "";
+    if (msg === "rate") return json({ error: "rate" }, 429);
+    if (msg === "contact") return json({ error: "contact" }, 422);
+    if (msg.includes("phone_check")) return json({ error: "phone" }, 422);
+    if (msg.includes("email_check")) return json({ error: "email" }, 422);
+    console.error("supabase join_launch_list", r.status, msg);
+    return json({ error: "server" }, 502);
   }
-
-  const row = await env.DB.prepare(
-    "INSERT INTO leads (name, email, phone, consent_at, source, utm, ip_hash, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
-  )
-    .bind(name, email, phone, new Date().toISOString(), clean(body.source, 60), body.utm ? JSON.stringify(body.utm).slice(0, 500) : null, ipHash, clean(req.headers.get("user-agent") ?? undefined, 300))
-    .first<{ id: number }>();
-
-  return json({ ok: true, position: row?.id ?? null });
+  const rows = (await r.json()) as { queue_position: number; already: boolean }[];
+  return json({ ok: true, position: rows[0]?.queue_position ?? null, already: !!rows[0]?.already });
 }
 
 async function count(env: Env): Promise<Response> {
-  const r = await env.DB.prepare("SELECT COUNT(*) AS n FROM leads").first<{ n: number }>();
-  return new Response(JSON.stringify({ count: r?.n ?? 0 }), {
+  if (!env.SUPABASE_SECRET_KEY) return json({ count: 0 });
+  const r = await rpc(env, "launch_list_count", {});
+  const n = r.ok ? Number(await r.json()) : 0;
+  return new Response(JSON.stringify({ count: Number.isFinite(n) ? n : 0 }), {
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=30" },
   });
 }
 
-async function exportCsv(req: Request, env: Env): Promise<Response> {
-  if (!env.ADMIN_TOKEN || req.headers.get("authorization") !== `Bearer ${env.ADMIN_TOKEN}`) return json({ error: "not_found" }, 404);
-  const { results } = await env.DB.prepare("SELECT id, name, email, phone, source, consent_at, created_at FROM leads ORDER BY id").all<Record<string, string | number | null>>();
-  const cols = ["id", "name", "email", "phone", "source", "consent_at", "created_at"];
-  const esc = (v: unknown) => (v == null ? "" : `"${String(v).replace(/"/g, '""')}"`);
-  const csv = [cols.join(","), ...results.map((r) => cols.map((c) => esc(r[c])).join(","))].join("\n");
-  return new Response("﻿" + csv, {
-    headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": 'attachment; filename="lista-lanzamiento.csv"', "cache-control": "no-store" },
+/** Llama una función de Postgres por la API REST de Supabase con la llave secreta. */
+function rpc(env: Env, fn: string, args: Record<string, unknown>): Promise<Response> {
+  return fetch(`${env.SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: "POST",
+    headers: { apikey: env.SUPABASE_SECRET_KEY!, "content-type": "application/json" },
+    body: JSON.stringify(args),
   });
 }
 

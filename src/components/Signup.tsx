@@ -28,6 +28,8 @@ const ERRORS: Record<string, string> = {
   captcha: "No pudimos verificar que eres humano. Intenta otra vez.",
   rate: "Muchos intentos seguidos. Prueba en unos minutos.",
   network: "No pudimos conectar. Revisa tu internet e intenta otra vez.",
+  config: "Estamos ajustando la lista. Intenta de nuevo en un rato.",
+  server: "Algo falló de nuestro lado. Intenta de nuevo en un momento.",
 };
 
 type Status = "idle" | "sending" | "done";
