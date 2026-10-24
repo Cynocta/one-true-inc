@@ -16,7 +16,11 @@
     "SUPABASE_URL": "https://rtaflovadzoanspemxbh.supabase.co"
   },
   // Secreto obligatorio: npx wrangler secret put SUPABASE_SECRET_KEY
-  "observability": { "enabled": true }
-  // Dominio (descomentar cuando la zona esté en Cloudflare):
-  // , "routes": [{ "pattern": "DOMINIO.com", "custom_domain": true }, { "pattern": "www.DOMINIO.com", "custom_domain": true }]
+  "observability": { "enabled": true },
+  // Dominio de One True (zona activa en Cloudflare). Cloudflare crea los registros DNS al desplegar;
+  // si ya existen registros A/AAAA/CNAME para @ o www, hay que borrarlos antes del primer deploy.
+  "routes": [
+    { "pattern": "onetrueinc.com", "custom_domain": true },
+    { "pattern": "www.onetrueinc.com", "custom_domain": true }
+  ]
 }

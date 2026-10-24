@@ -4,7 +4,7 @@
 
 | Rama | Qué tiene | Se despliega en |
 |---|---|---|
-| `main` | Solo la página de **Próximamente** + API de la lista de lanzamiento | Dominio de One True (Worker `onetrue-proximamente`) |
+| `main` | Solo la página de **Próximamente** + API de la lista de lanzamiento | **onetrueinc.com** y www (Worker `onetrue-proximamente`) |
 | `develop` | El **sitio completo** (eventos, boletas, /historia, panel, base de datos) | Preview en `onetrue-develop.<cuenta>.workers.dev` |
 
 Cada push a una de las dos ramas despliega solo con GitHub Actions (`.github/workflows/deploy.yml` de cada rama).
@@ -23,8 +23,8 @@ Proyecto `rtaflovadzoanspemxbh` (`https://rtaflovadzoanspemxbh.supabase.co`).
 La llave publicable (`sb_publishable_...`) no hace falta para esta página: la tabla no se lee ni se escribe desde el navegador.
 
 ### Cloudflare
-1. **Dominio:** agregar la zona y cambiar los nameservers en el registrador.
-2. **Dominio en el Worker:** en `wrangler.jsonc` (rama `main`) descomentar `routes` con el dominio y `www`.
+1. **Dominio:** `onetrueinc.com` ya está activo en Cloudflare (registrado en Hostinger, nameservers `langston` y `zoe` de Cloudflare). Ojo: en Cloudflare debe estar escrito `onetrueinc.com`.
+2. **Dominio en el Worker:** ya configurado en `wrangler.jsonc` (`onetrueinc.com` y `www.onetrueinc.com` como Custom Domains). **Antes del primer deploy**, en Cloudflare > DNS, borrar los registros A/AAAA/CNAME que existan para `@` y `www` (los importó Cloudflare de Hostinger). Si no, el deploy falla por conflicto. Cloudflare crea los registros correctos al desplegar.
 3. **Secretos del Worker:**
    ```bash
    npx wrangler login
@@ -35,7 +35,7 @@ La llave publicable (`sb_publishable_...`) no hace falta para esta página: la t
 4. **Token para GitHub:** Cloudflare > My Profile > API Tokens > plantilla "Edit Cloudflare Workers".
 5. **GitHub > Settings > Secrets and variables > Actions:**
    - Secretos: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-   - Variables: `SITE_URL` = `https://dominio` (URL absoluta para la tarjeta de WhatsApp) y, opcional, `TURNSTILE_SITE_KEY`
+   - Variables: `SITE_URL` = `https://onetrueinc.com` (URL absoluta para la tarjeta de WhatsApp) y, opcional, `TURNSTILE_SITE_KEY`
 
 ## Lista de lanzamiento (Supabase)
 
@@ -63,6 +63,6 @@ En local los registros van a la misma base de Supabase: borrar las pruebas desde
 ## Pendientes
 
 - [ ] Correr el SQL en Supabase, crear la llave secreta y cargar los secretos (pasos de arriba).
-- [ ] Dominio en Cloudflare.
+- [x] Dominio `onetrueinc.com` activo en Cloudflare (2026-10-24).
 - [ ] Revisar el texto de tratamiento de datos con One True (razón social, canal oficial para pedir borrado).
 - [ ] Logo oficial en SVG (hoy es una reconstrucción).
