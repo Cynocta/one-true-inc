@@ -6,3 +6,5 @@ next-env.d.ts
 .next-build
 .env*.local
 .claude/
+.wrangler
+.dev.vars

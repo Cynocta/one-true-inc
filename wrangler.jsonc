@@ -1,0 +1,11 @@
+// Rama develop: sitio completo como Worker de solo archivos estáticos (preview en *.workers.dev).
+// La rama main despliega la página de Próximamente en el dominio (otro Worker, otra config).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "onetrue-develop",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
