@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useRef, useState, type MouseEvent } from "react";
 import { useI18n } from "@/components/providers/I18nProvider";
-import { LOGO_MARK_PATHS } from "@/components/ui/Brand";
+import { LOGO_MARK } from "@/components/ui/Brand";
 import { TICKETS, zonePrice } from "@/data/site";
 import { fmtMoney, tx } from "@/lib/format";
 import { AREAS, availability, SOLD, UNITS, type Unit } from "./venue";
@@ -172,8 +172,8 @@ export function VenueMap({ zone, onZone, units = [], onUnit, interactive = true,
           {/* Logo en la lona */}
           <motion.g initial={{ opacity: 0, scale: 0.4 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9, type: "spring", stiffness: 200, damping: 12 }}
             style={{ transformOrigin: `${RC.x}px ${RC.y}px` }}>
-            <g transform={`translate(${RC.x} ${RC.y}) scale(.075) translate(-352 -530)`} fill="#fff" className={s.canvasLogo}>
-              {LOGO_MARK_PATHS.map((d) => <path key={d} d={d} />)}
+            <g transform={`translate(${RC.x} ${RC.y}) scale(.036) translate(-664 -1000)`} fill="#fff" className={s.canvasLogo}>
+              <path d={LOGO_MARK} />
             </g>
           </motion.g>
           {/* Cuerdas que se dibujan */}
