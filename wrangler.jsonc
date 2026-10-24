@@ -1,0 +1,27 @@
+// Rama main: página de Próximamente en el dominio de One True.
+// Archivos estáticos (Next.js export en ./out) + Worker para /api/* (registro en D1).
+// La rama develop tiene su propia config (sitio completo, Worker "onetrue-develop").
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "onetrue-proximamente",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "onetrue-lanzamiento",
+      // Reemplazar con el id que devuelve: npx wrangler d1 create onetrue-lanzamiento
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": { "enabled": true }
+  // Dominio (descomentar cuando la zona esté en Cloudflare):
+  // , "routes": [{ "pattern": "DOMINIO.com", "custom_domain": true }, { "pattern": "www.DOMINIO.com", "custom_domain": true }]
+}

@@ -1,5 +1,0 @@
-.tabs { display: flex; gap: 4px; margin-bottom: 36px; border-bottom: 1px solid var(--gray-2); }
-.tab { position: relative; padding: 18px 28px; font: 700 20px/1 var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--mid); transition: color .2s; }
-.tab:hover, .on { color: var(--text); }
-.ind { position: absolute; left: 0; right: 0; bottom: -1px; height: 4px; background: var(--red); }
-@media (max-width: 640px) { .tab { padding: 14px 16px; font-size: 17px; } }
