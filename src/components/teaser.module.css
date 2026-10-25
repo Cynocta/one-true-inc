@@ -178,7 +178,7 @@
 
 /* ---------------- Pie ---------------- */
 .foot { display: grid; justify-items: center; gap: 14px; padding: 60px 16px 40px; border-top: 1px solid var(--line); text-align: center; color: var(--mid); }
-.footLogo { width: 34px; color: var(--red); }
+.footLogo { width: clamp(160px, 18vw, 220px); height: auto; color: #fff; }
 .foot p { margin: 0; font: 800 18px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: #fff; }
 .foot nav { display: flex; gap: 22px; }
 .foot nav a { font: 700 13px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }

@@ -3,7 +3,7 @@
 import { InstagramLogoIcon, ThreadsLogoIcon, WhatsappLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { animate, AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
-import { Logo } from "./Logo";
+import { Logo, Wordmark } from "./Logo";
 import { Signup } from "./Signup";
 import s from "./teaser.module.css";
 
@@ -194,7 +194,7 @@ export function Teaser() {
       <Signup count={count} />
 
       <footer className={s.foot}>
-        <Logo className={s.footLogo} markOnly />
+        <Wordmark className={s.footLogo} />
         <p>La casa del verdadero boxeo.</p>
         <nav aria-label="Redes de One True">
           <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
