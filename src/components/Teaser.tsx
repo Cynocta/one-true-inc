@@ -7,13 +7,19 @@ import { Logo, Wordmark } from "./Logo";
 import { Signup } from "./Signup";
 import s from "./teaser.module.css";
 
-/** Fotos reales de TrueBoxing 3 (abr 2026) y de la noche del 26 ago 2025, del Drive de One True. */
+/**
+ * Fotos reales del Drive de One True: Gabo en TrueBoxing 4 (6 sep 2026) abre la rotación,
+ * mezclado con TrueBoxing 3 (abr 2026) y la noche del 26 ago 2025.
+ * Las de Gabo están recortadas en vertical y centradas en él.
+ */
 const PHOTOS = [
-  { src: "/img/tb3-grito.webp", pos: "58% 28%" },
-  { src: "/img/ago25-presion.webp", pos: "50% 30%" },
+  { src: "/img/gabo-golpe.webp", pos: "50% 22%" },
   { src: "/img/tb3-golpe.webp", pos: "50% 35%" },
+  { src: "/img/gabo-esquina.webp", pos: "40% 22%" },
   { src: "/img/ago25-gato.webp", pos: "62% 40%" },
+  { src: "/img/gabo-entrada.webp", pos: "60% 30%" },
   { src: "/img/tb3-impacto.webp", pos: "50% 40%" },
+  { src: "/img/gabo-combate.webp", pos: "50% 25%" },
 ];
 
 const PUNCHES = ["JAB", "CROSS", "HOOK", "UPPERCUT"];
